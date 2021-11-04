@@ -1,0 +1,74 @@
+cabal-version:      2.4
+name:               my-token
+version:            0.1.0.0
+synopsis:           NANO Frames
+license:            NONE
+author:             Jorge Orozco
+maintainer:         jorge.orosan@gmail.com
+
+extra-source-files: CHANGELOG.md
+
+Flag unexpected_thunks
+  Description:   Turn on unexpected thunks checks
+  Default:       False
+
+common base
+  build-depends: base >= 4.14 && < 4.15
+
+common project-config
+  default-language:     Haskell2010
+
+  default-extensions:   NoImplicitPrelude
+                        OverloadedStrings
+
+  ghc-options:          -Wall
+                        -Wcompat
+                        -Wincomplete-record-updates
+                        -Wincomplete-uni-patterns
+                        -Wpartial-fields
+                        -Wredundant-constraints
+                        -Wunused-packages
+
+library
+    import:               base, project-config
+
+    if flag(unexpected_thunks)
+        cpp-options: -DUNEXPECTED_THUNKS
+
+    hs-source-dirs:       src
+
+    exposed-modules:   Token
+    build-depends:     aeson
+                     , cardano-api
+                     , containers
+                     , data-default
+                     , freer-extras
+                     , playground-common
+                     , plutus-chain-index
+                     , plutus-contract
+                     , plutus-ledger
+                     , plutus-ledger-api
+                     , plutus-tx-plugin
+                     , plutus-tx
+                     , prettyprinter ^>=1.7.0
+                     , serialise ^>= 0.2.3.0
+                     , bytestring ^>= 0.10.12.0
+                     , text
+
+    ghc-options: -fobject-code -fno-ignore-interface-pragmas -fno-omit-interface-pragmas -fno-strictness -fno-spec-constr -fno-specialise
+
+executable plutus-minting
+  import:               base, project-config
+  hs-source-dirs:       app
+  main-is:              plutus-mint.hs
+  ghc-options:          -threaded -rtsopts "-with-rtsopts=-T"
+
+  build-depends:        aeson
+                      , cardano-api
+                      , cardano-ledger-alonzo
+                      , plutus-ledger
+                      , my-token
+                      , plutus-ledger-api
+                      , plutus-tx
+                      , text
+                      , bytestring

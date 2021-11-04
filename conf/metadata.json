@@ -1,0 +1,16 @@
+{
+  "721": {
+    "258384256362d377a550905d43cb56c405c294a51fe04b211aba1698": {
+      "nano": {
+        "name": "alpha series",
+        "image": "ipfs://QmXPPQxm2rtFJaGz3yMewiuSBxFjjk8p1Vwi1LiXp1Dh5W",
+        "mediaType": "image/png",
+        "description": "nano - alpha series",
+        "files": [{
+            "src": "ipfs://QmQ6wVGsoC9QUysD9KHk2XTnPLvAwAMChf8AKnunttUMzi",
+            "mediaType": "video/mp4"
+        }]
+      }
+    }
+  }
+}
