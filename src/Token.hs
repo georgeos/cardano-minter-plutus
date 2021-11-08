@@ -36,35 +36,55 @@ import Ledger.Value as Value (TokenName (TokenName), flattenValue)
 import qualified PlutusTx
 import PlutusTx.Prelude
   ( Bool (False),
+    BuiltinByteString,
     BuiltinData,
     Eq ((==)),
+    Integer,
+    consByteString,
+    elem,
+    emptyByteString,
+    otherwise,
+    quotient,
+    remainder,
     traceIfFalse,
     ($),
     (&&),
+    (+),
     (.),
-    (||),
+    (<>),
+    appendByteString,
   )
+
+{-# INLINEABLE integerToBS #-}
+integerToBS :: Integer -> BuiltinByteString
+integerToBS x
+  | x `quotient` 10 == 0 = digitToBS x
+  | otherwise = integerToBS (x `quotient` 10) <> digitToBS (x `remainder` 10)
+  where
+    digitToBS :: Integer -> BuiltinByteString
+    digitToBS d = consByteString (d + 48) emptyByteString
 
 {-# INLINEABLE mkPolicy #-}
 mkPolicy :: BuiltinData -> ScriptContext -> Bool
 mkPolicy _ ctx =
-  traceIfFalse "wrong amount minted" checkMintedAmount
+  traceIfFalse "Wrong minted value" checkMintedValue
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    checkMintedAmount :: Bool
-    checkMintedAmount = case flattenValue (txInfoMint info) of
+    checkMintedValue :: Bool
+    checkMintedValue = case flattenValue (txInfoMint info) of
       [(cs, tn, amt)] -> cs == ownCurrencySymbol ctx && checkTokenName tn && amt == 1
       _ -> False
 
     checkTokenName :: TokenName -> Bool
-    checkTokenName tn =
-      tn == TokenName "MyPlutusToken1"
-        || tn == TokenName "MyPlutusToken2"
-        || tn == TokenName "MyPlutusToken3"
-        || tn == TokenName "MyPlutusToken4"
-        || tn == TokenName "MyPlutusToken5"
+    checkTokenName tn = tn `elem` tokenList
+
+    tokenList :: [TokenName]
+    tokenList = [TokenName $ appendByteString "nano" (integerToBS i) | i <- numberList]
+
+    numberList :: [Integer]
+    numberList = [1,2,3,4,5]
 
 policy :: Scripts.MintingPolicy
 policy =
