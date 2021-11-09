@@ -128,8 +128,7 @@ mkValidator id nc datum redeemer ctx
       && traceIfFalse "Fees not paid" checkFees
       && traceIfFalse "Identifier nft missing from input" inputHasToken
       && traceIfFalse "Identifier nft missing from output" outputHasToken
-      -- && traceIfFalse "Datum not increased in one" checkOutputDatum
-      && traceIfFalse (decodeUtf8 $ appendByteString "new datum is: " $ integerToBS outputDatum) checkOutputDatum
+      && traceIfFalse "Datum not increased in one" checkOutputDatum
   | otherwise = False
   where
     info :: TxInfo
@@ -163,7 +162,7 @@ mkValidator id nc datum redeemer ctx
     checkOutputDatum :: Bool
     checkOutputDatum =
       outputDatum == datum + 1
-        && datum < 6
+        && outputDatum < 6
 
     checkFees :: Bool
     checkFees =

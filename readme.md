@@ -226,11 +226,11 @@ cardano-cli transaction hash-script-data \
 cardano-cli transaction build \
     --alonzo-era \
     --testnet-magic  1097911063 \
-    --tx-in d4a66d071fc67623918e30ca8f5fb28a8d7135b6c2a7e6d14fbb2076fbcf1186#0 \
-    --tx-in d4a66d071fc67623918e30ca8f5fb28a8d7135b6c2a7e6d14fbb2076fbcf1186#1 \
+    --tx-in 78876a20643c4caf073a63134f86ab359de684364fdbfcc3dd47d15cafc533cd#0 \
+    --tx-in b6faf94fe1acc72617eebaaee89bd4032ece3c903fea0ce27e246a5ce01d6f2f#1 \
     --tx-out $(cat files/gift.addr)+2000000+"1 074c6f56fb674724cdc5b744027d9d8eb0056b59272b3e344205d349.6e667431" \
-    --tx-out-datum-hash 03170a2e7597b7b7e3d84c05391d139a62b157e78786d8c082f29dcf4c111314 \
-    --change-address addr_test1qzr8dxy9wy4lyjsrmhufkrcfhdxy27k329z66xs6xqjartzrym79ewvl0rem9r0wk8dtry43hj4nt0ghw09n60v40k3srv5uq3 \
+    --tx-out-datum-embed-value 0 \
+    --change-address $(cat keys/payment.addr) \
     --tx-in-collateral 09a3d2115eaf7a6bb44ca5adad62170ef737a032728c44b9e219f260085b4db8#1 \
     --protocol-params-file conf/protocol-params.json \
     --out-file files/start.raw &&
@@ -247,13 +247,13 @@ cardano-cli transaction submit \
 cardano-cli transaction build \
     --alonzo-era \
     --testnet-magic  1097911063 \
-    --tx-in 276efa32bd7f6ffd68c4b9fc2bfac6b9fe90f302051114914ae8f763f9dee1f2#1 \
+    --tx-in a9094b9e27d510682878b6facc79c0fb60b9e070e4e97e7dc379475977d6873d#1 \
     --tx-in-script-file files/gift.plutus \
-    --tx-in-datum-value 0 \
+    --tx-in-datum-value 5 \
     --tx-in-redeemer-value 10 \
-    --tx-in 276efa32bd7f6ffd68c4b9fc2bfac6b9fe90f302051114914ae8f763f9dee1f2#0 \
-    --tx-out addr_test1qzr8dxy9wy4lyjsrmhufkrcfhdxy27k329z66xs6xqjartzrym79ewvl0rem9r0wk8dtry43hj4nt0ghw09n60v40k3srv5uq3+2000000+"1 074c6f56fb674724cdc5b744027d9d8eb0056b59272b3e344205d349.6e667431" \
-    --change-address addr_test1qzr8dxy9wy4lyjsrmhufkrcfhdxy27k329z66xs6xqjartzrym79ewvl0rem9r0wk8dtry43hj4nt0ghw09n60v40k3srv5uq3 \
+    --tx-in a9094b9e27d510682878b6facc79c0fb60b9e070e4e97e7dc379475977d6873d#0 \
+    --tx-out $(cat keys/payment.addr)+2000000+"1 074c6f56fb674724cdc5b744027d9d8eb0056b59272b3e344205d349.6e667431" \
+    --change-address $(cat keys/payment.addr) \
     --tx-in-collateral 09a3d2115eaf7a6bb44ca5adad62170ef737a032728c44b9e219f260085b4db8#1 \
     --protocol-params-file conf/protocol-params.json \
     --out-file files/close.raw &&
@@ -266,7 +266,7 @@ cardano-cli transaction submit \
     --tx-file files/close.signed
 
 ## Purchase
-echo -n nft1 | basenc --base16 | awk '{print tolower($0)}'
+echo -n nano6 | basenc --base16 | awk '{print tolower($0)}'
 
 cardano-cli transaction hash-script-data \
     --script-data-value 1
@@ -274,28 +274,26 @@ cardano-cli transaction hash-script-data \
 cardano-cli transaction build \
     --alonzo-era \
     --testnet-magic  1097911063 \
-    --tx-in 318f65d2fd51a9c3ea4f12c19b579f60ea1345ed8230b20174041a61d7b9d8e7#1 \
+    --tx-in a9094b9e27d510682878b6facc79c0fb60b9e070e4e97e7dc379475977d6873d#1 \
     --tx-in-script-file files/gift.plutus \
-    --tx-in-datum-value 0 \
+    --tx-in-datum-value 5 \
     --tx-in-redeemer-value 1 \
-    --tx-in 318f65d2fd51a9c3ea4f12c19b579f60ea1345ed8230b20174041a61d7b9d8e7#0 \
-    --tx-out $(cat files/gift.addr)+4000000+"1 074c6f56fb674724cdc5b744027d9d8eb0056b59272b3e344205d349.6e667431" \
-    --tx-out-datum-hash ee155ace9c40292074cb6aff8c9ccdd273c81648ff1149ef36bcea6ebb8a3e25 \
-    --tx-out addr_test1qzr8dxy9wy4lyjsrmhufkrcfhdxy27k329z66xs6xqjartzrym79ewvl0rem9r0wk8dtry43hj4nt0ghw09n60v40k3srv5uq3+2000000+"1 58bcd044cf5cdffb47f74e5ab8495b2a51703970256a5ce4159d1645.6e616e6f31" \
-    --mint "1 58bcd044cf5cdffb47f74e5ab8495b2a51703970256a5ce4159d1645.6e616e6f31" \
+    --tx-in a9094b9e27d510682878b6facc79c0fb60b9e070e4e97e7dc379475977d6873d#0 \
+    --tx-out $(cat files/gift.addr)+14000000+"1 074c6f56fb674724cdc5b744027d9d8eb0056b59272b3e344205d349.6e667431" \
+    --tx-out-datum-embed-value 6 \
+    --tx-out $(cat keys/payment.addr)+2000000+"1 58bcd044cf5cdffb47f74e5ab8495b2a51703970256a5ce4159d1645.6e616e6f36" \
+    --mint "1 58bcd044cf5cdffb47f74e5ab8495b2a51703970256a5ce4159d1645.6e616e6f36" \
     --mint-script-file files/minting-policy.plutus \
     --mint-redeemer-file conf/redeemer.json \
     --metadata-json-file conf/metadata.json \
-    --change-address addr_test1qzr8dxy9wy4lyjsrmhufkrcfhdxy27k329z66xs6xqjartzrym79ewvl0rem9r0wk8dtry43hj4nt0ghw09n60v40k3srv5uq3 \
+    --change-address $(cat keys/payment.addr) \
     --tx-in-collateral 09a3d2115eaf7a6bb44ca5adad62170ef737a032728c44b9e219f260085b4db8#1 \
     --protocol-params-file conf/protocol-params.json \
-    --out-file files/purchase.raw
-
+    --out-file files/purchase.raw &&
 cardano-cli transaction sign \
     --tx-body-file files/purchase.raw \
     --signing-key-file keys/payment.skey \
-    --out-file files/purchase.signed
-
+    --out-file files/purchase.signed &&
 cardano-cli transaction submit \
     --testnet-magic 1097911063 \
     --tx-file files/purchase.signed
