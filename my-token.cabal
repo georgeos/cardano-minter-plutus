@@ -38,7 +38,7 @@ library
     hs-source-dirs:       src
 
     exposed-modules:   Token
-                     , Gift
+                     , Sale
     build-depends:     aeson
                      , cardano-api
                      , containers
@@ -74,10 +74,10 @@ executable plutus-minting
                       , text
                       , bytestring
 
-executable gift
+executable sale
   import:               base, project-config
   hs-source-dirs:       app
-  main-is:              plutus-gift.hs
+  main-is:              plutus-sale.hs
   ghc-options:          -threaded -rtsopts "-with-rtsopts=-T"
 
   build-depends:        aeson

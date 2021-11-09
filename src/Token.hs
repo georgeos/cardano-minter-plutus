@@ -81,7 +81,7 @@ mkPolicy _ ctx =
     checkTokenName tn = tn `elem` tokenList
 
     tokenList :: [TokenName]
-    tokenList = [TokenName $ appendByteString "nano" (integerToBS i) | i <- numberList]
+    tokenList = [TokenName $ appendByteString "MyToken" (integerToBS i) | i <- numberList]
 
     numberList :: [Integer]
     numberList = [1,2,3,4,5]

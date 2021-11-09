@@ -9,9 +9,9 @@
 {-# LANGUAGE NoImplicitPrelude #-}
 {-# OPTIONS_GHC -fno-warn-unused-imports #-}
 
-module Gift
-  ( giftSBS,
-    giftSerialised,
+module Sale
+  ( saleSBS,
+    saleSerialised,
   )
 where
 
@@ -117,11 +117,10 @@ instance Scripts.ValidatorTypes Gift where
   type DatumType Gift = Integer
   type RedeemerType Gift = Integer
 
--- pubkeyhash to redeem
-
+-- | Missing pubkeyhash to redeem == 10
 {-# INLINEABLE mkValidator #-}
 mkValidator :: AssetClass -> CurrencySymbol -> Integer -> Integer -> ScriptContext -> Bool
-mkValidator id nc datum redeemer ctx
+mkValidator id tk datum redeemer ctx
   | redeemer == 10 = True
   | redeemer == 1 =
     traceIfFalse "Wrong minted value" checkMintedValue
@@ -138,7 +137,7 @@ mkValidator id nc datum redeemer ctx
     mintedValue = txInfoMint info
 
     checkMintedValue :: Bool
-    checkMintedValue = assetClassValue (assetClass nc $ TokenName $ appendByteString "nano" $ integerToBS $ datum + 1) 1 == mintedValue
+    checkMintedValue = assetClassValue (assetClass tk $ TokenName $ appendByteString "MyToken" $ integerToBS $ datum + 1) 1 == mintedValue
 
     ownInput :: TxOut
     ownInput = case findOwnInput ctx of
@@ -173,15 +172,15 @@ mkValidator id nc datum redeemer ctx
 identifier :: AssetClass
 identifier = assetClass ("074c6f56fb674724cdc5b744027d9d8eb0056b59272b3e344205d349" :: CurrencySymbol) ("nft1" :: TokenName)
 
-nanoCurrency :: CurrencySymbol
-nanoCurrency = "58bcd044cf5cdffb47f74e5ab8495b2a51703970256a5ce4159d1645" :: CurrencySymbol
+tokenCurrency :: CurrencySymbol
+tokenCurrency = "f13faca3fc4a5964d797ab1a547ad0a7a265b8bae645894b00d94fe9" :: CurrencySymbol
 
 typedValidator :: Scripts.TypedValidator Gift
 typedValidator =
   Scripts.mkTypedValidator @Gift
     ( $$(PlutusTx.compile [||mkValidator||])
         `PlutusTx.applyCode` PlutusTx.liftCode identifier
-        `PlutusTx.applyCode` PlutusTx.liftCode nanoCurrency
+        `PlutusTx.applyCode` PlutusTx.liftCode tokenCurrency
     )
     $$(PlutusTx.compile [||wrap||])
   where
@@ -193,11 +192,11 @@ validator = validatorScript typedValidator
 scrAddress :: Ledger.Address
 scrAddress = scriptAddress validator
 
-giftScript :: Plutus.Script
-giftScript = Plutus.unValidatorScript validator
+saleScript :: Plutus.Script
+saleScript = Plutus.unValidatorScript validator
 
-giftSBS :: SBS.ShortByteString
-giftSBS = SBS.toShort . LBS.toStrict $ serialise giftScript
+saleSBS :: SBS.ShortByteString
+saleSBS = SBS.toShort . LBS.toStrict $ serialise saleScript
 
-giftSerialised :: PlutusScript PlutusScriptV1
-giftSerialised = PlutusScriptSerialised giftSBS
+saleSerialised :: PlutusScript PlutusScriptV1
+saleSerialised = PlutusScriptSerialised saleSBS

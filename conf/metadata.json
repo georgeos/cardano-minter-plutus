@@ -1,11 +1,10 @@
 {
   "721": {
-    "58bcd044cf5cdffb47f74e5ab8495b2a51703970256a5ce4159d1645": {
-      "nano1": {
-        "name": "alpha series",
+    "f13faca3fc4a5964d797ab1a547ad0a7a265b8bae645894b00d94fe9": {
+      "MyToken1": {
+        "name": "mytoken",
         "image": "ipfs://QmXPPQxm2rtFJaGz3yMewiuSBxFjjk8p1Vwi1LiXp1Dh5W",
         "mediaType": "image/png",
-        "description": "nano - alpha series",
         "files": [{
             "src": "ipfs://QmQ6wVGsoC9QUysD9KHk2XTnPLvAwAMChf8AKnunttUMzi",
             "mediaType": "video/mp4"
