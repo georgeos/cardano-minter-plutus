@@ -20,52 +20,79 @@ module Token
 where
 
 import Cardano.Api.Shelley (PlutusScript (..), PlutusScriptV1)
-import Codec.Serialise ( serialise )
+import Codec.Serialise (serialise)
 import qualified Data.ByteString.Lazy as LB
 import qualified Data.ByteString.Short as SBS
 import Ledger
-    ( ownCurrencySymbol,
-      mkMintingPolicyScript,
-      unMintingPolicyScript,
-      ScriptContext(scriptContextTxInfo),
-      TxInfo(txInfoMint),
-      Script )
+  ( Script,
+    ScriptContext (scriptContextTxInfo),
+    TxInfo (txInfoMint),
+    mkMintingPolicyScript,
+    ownCurrencySymbol,
+    unMintingPolicyScript,
+  )
 import qualified Ledger.Typed.Scripts as Scripts
-import Ledger.Value as Value ( TokenName(TokenName), flattenValue )
+import Ledger.Value as Value (TokenName (TokenName), flattenValue)
 import qualified PlutusTx
 import PlutusTx.Prelude
-    ( Bool(False),
-      Integer,
-      (.),
-      BuiltinData,
-      (&&),
-      ($),
-      traceIfFalse,
-      Eq((==)) )
+  ( Bool (False),
+    BuiltinByteString,
+    BuiltinData,
+    Eq ((==)),
+    Integer,
+    consByteString,
+    elem,
+    emptyByteString,
+    otherwise,
+    quotient,
+    remainder,
+    traceIfFalse,
+    ($),
+    (&&),
+    (+),
+    (.),
+    (<>),
+    appendByteString,
+  )
+
+{-# INLINEABLE integerToBS #-}
+integerToBS :: Integer -> BuiltinByteString
+integerToBS x
+  | x `quotient` 10 == 0 = digitToBS x
+  | otherwise = integerToBS (x `quotient` 10) <> digitToBS (x `remainder` 10)
+  where
+    digitToBS :: Integer -> BuiltinByteString
+    digitToBS d = consByteString (d + 48) emptyByteString
 
 {-# INLINEABLE mkPolicy #-}
-mkPolicy :: Integer -> BuiltinData -> ScriptContext -> Bool
-mkPolicy _ _ ctx = traceIfFalse "wrong amount minted" checkMintedAmount
+mkPolicy :: BuiltinData -> ScriptContext -> Bool
+mkPolicy _ ctx =
+  traceIfFalse "Wrong minted value" checkMintedValue
   where
     info :: TxInfo
     info = scriptContextTxInfo ctx
 
-    checkMintedAmount :: Bool
-    checkMintedAmount = case flattenValue (txInfoMint info) of
-      [(cs, tn, amt)] -> cs == ownCurrencySymbol ctx && tn == TokenName "MyPlutusToken" && amt == 1
+    checkMintedValue :: Bool
+    checkMintedValue = case flattenValue (txInfoMint info) of
+      [(cs, tn, amt)] -> cs == ownCurrencySymbol ctx && checkTokenName tn && amt == 1
       _ -> False
 
-policy :: Integer -> Scripts.MintingPolicy
-policy amount =
-  mkMintingPolicyScript $
-    $$(PlutusTx.compile [||Scripts.wrapMintingPolicy . mkPolicy||])
-      `PlutusTx.applyCode` PlutusTx.liftCode amount
+    checkTokenName :: TokenName -> Bool
+    checkTokenName tn = tn `elem` tokenList
+
+    tokenList :: [TokenName]
+    tokenList = [TokenName $ appendByteString "nano" (integerToBS i) | i <- numberList]
+
+    numberList :: [Integer]
+    numberList = [1,2,3,4,5]
+
+policy :: Scripts.MintingPolicy
+policy =
+  mkMintingPolicyScript $$(PlutusTx.compile [||Scripts.wrapMintingPolicy mkPolicy||])
 
 plutusScript :: Script
 plutusScript =
-  unMintingPolicyScript (policy amount)
-  where
-    amount = 1
+  unMintingPolicyScript policy
 
 mintTokenSBS :: SBS.ShortByteString
 mintTokenSBS = SBS.toShort . LB.toStrict $ serialise plutusScript
