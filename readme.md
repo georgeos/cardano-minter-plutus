@@ -12,18 +12,18 @@ In every purchase, user should pay 2 ADA and get back the NFT minted.
 
 ## Instructions
 
-1. Generate the `minting-policy.plutus` using:
-`cabal run plutus-minting`
+1. Generate the `minting-policy.plutus`:
+    - `cabal run plutus-minting`
 
-2. Generate the policy id: using
-`cardano-cli transaction policyid --script-file files/minting-policy.plutus > files/minting-policy.id`
+2. Generate the policy id
+    - `cardano-cli transaction policyid --script-file files/minting-policy.plutus > files/minting-policy.id`
 
 3. Change:
- - `conf/metadata.json` and `src/Sale.hs` to use the new policy id
-- `src/Sale.hs` to use your NFT to identify the sale
+    - `conf/metadata.json` and `src/Sale.hs` to use the new policy id
+    - `src/Sale.hs` to use your NFT to identify the sale
 
 4. Generate sale plutus
-`cabal run sale`
+    - `cabal run sale`
 
 5. Generate script address
 ```
@@ -65,7 +65,7 @@ cardano-cli transaction submit \
 8. Purchase
 
     8.1 Generate the name of the NFT in the scripts below and `conf/metadata.json` using following command:
-        `echo -n MyToken2 | basenc --base16 | awk '{print tolower($0)}'`
+    - `echo -n MyToken2 | basenc --base16 | awk '{print tolower($0)}'`
 
     8.2 Change the following script with appropiated values (currently it's based to buy MyToken2)
     - --tx-in 
@@ -102,7 +102,10 @@ cardano-cli transaction submit \
     --tx-file files/purchase.signed
 ```
 
-9. Close the sale: change the following script with the appropiated values (currently it's based to close with datum = 1):
+9. Check the purchase from cardanoscan:
+> https://testnet.cardanoscan.io/address/addr_test1wq58k5juzelsu5famg4ln8lqzj0jrtf3l6ge4w8edk0gvcs4fxcl5
+
+10. Close the sale: change the following script with the appropiated values (currently it's based to close with datum = 1):
     - --tx-in
     - --tx-in-datum-value
     - --tx-out
